@@ -5,6 +5,11 @@ export default class Landmark {
 
     this.sprite = scene.add.image(x, y, data.key);
     this.sprite.setOrigin(0.5, 1);
+
+    // 👇 加上这一行：如果配置里有 scale，就用配置的，没有就用默认的 1
+    this.sprite.setScale(data.scale || 1);
+
+    
     this.sprite.setDepth(10);
     this.sprite.setInteractive({ useHandCursor: true });
     this.sprite.on('pointerdown', (pointer, localX, localY, event) => {

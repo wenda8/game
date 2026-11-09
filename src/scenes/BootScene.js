@@ -9,12 +9,16 @@ export default class BootScene extends Phaser.Scene {
     this.add
       .text(400, 225, '加载中…', { fontSize: '24px', color: '#333' })
       .setOrigin(0.5);
+
+    LANDMARKS.forEach((lm) => {
+        this.load.image(lm.key, `assets/landmarks/${lm.file}`);
+    });
   }
 
   create() {
     this.createHeroTexture();
     this.createGroundTexture();
-    LANDMARKS.forEach((lm) => this.createLandmarkTexture(lm.key, lm.color));
+    // LANDMARKS.forEach((lm) => this.createLandmarkTexture(lm.key, lm.color));
 
     this.scene.start('WalkScene');
   }
