@@ -1,6 +1,8 @@
 import Hero from '../objects/Hero.js';
 import Landmark from '../objects/Landmark.js';
 import { GAME_CONFIG, LANDMARKS } from '../config.js';
+import QuizUI from '../objects/QuizUI.js';
+
 
 export default class WalkScene extends Phaser.Scene {
   constructor() {
@@ -51,6 +53,9 @@ export default class WalkScene extends Phaser.Scene {
       if (currentlyOver && currentlyOver.length > 0) return;
       this.onScreenTap();
     });
+
+    this.quizUI = new QuizUI(this);
+    this.isAnswering = false; // 👈 新增：是否正在答题的状态锁
   }
 
   spawnLandmark() {
@@ -75,7 +80,7 @@ export default class WalkScene extends Phaser.Scene {
     console.log('[spawn]', data.key, 'at x=', x, 'total spawned=', this.spawnedCount);
   }
 
-  triggerHeJoin(){
+  triggerHeJoin(landmarkData){
     const cfg = GAME_CONFIG;
     const groundY = cfg.height - cfg.groundHeight;
     this.isJoining = true;
@@ -84,7 +89,7 @@ export default class WalkScene extends Phaser.Scene {
     this.he.setFlipX(false);
     this.he.setWalking(true);
     
-    const targetX = this.she.sprite.x + 100;
+    const targetX = this.she.sprite.x + 200;
     
     this.tweens.add({
       targets: this.he.sprite,
@@ -92,10 +97,20 @@ export default class WalkScene extends Phaser.Scene {
       duration: 1500,
       ease: 'Linear',
       onComplete: () => {
+        // 男主到达，两人停下
         this.he.setWalking(false);
         this.she.setWalking(false);
-        this.time.delayedCall(1000, () => {
 
+        this.she.sprite.setDepth(60);
+        this.he.sprite.setDepth(50);
+
+        this.time.delayedCall(1000, () => {
+          // 触发答题
+          if (landmarkData && landmarkData.data.question) {
+            this.askQuestion(landmarkData.data);
+          } else {
+            this.spawnLandmark();
+          }
           this.he.setFlipX(true);
           this.isJoining = false;
           this.spawnLandmark();
@@ -107,6 +122,7 @@ export default class WalkScene extends Phaser.Scene {
   }
 
   onScreenTap() {
+    if (this.isAdvancing || this.isJoining || this.isAnswering) return;  // 如果正在答题，或者正在移动，直接打断
     console.log('[onScreenTap] isAdvancing=', this.isAdvancing,
       'spawned=', this.spawnedCount,
       'landmarks=', this.landmarks.length);
@@ -123,41 +139,64 @@ export default class WalkScene extends Phaser.Scene {
     console.log('[onScreenTap] started advancing');
   }
 
+  // 统一出题方法
+  askQuestion(questionData) {
+    this.isAnswering = true; // 锁住屏幕移动
+    
+    // 在题目前面加上“男生：”
+    const modifiedData = {
+      ...questionData,
+      question: `男生：${questionData.question}`
+    };
+
+    this.quizUI.show(modifiedData, 
+      // 答对的回调
+      () => {
+        this.isAnswering = false; // 解锁
+        this.spawnLandmark();     // 继续生成新地标
+      },
+      // 答错的回调（会在 QuizUI 里直接重启）
+      () => {}
+    );
+  }
+
   update(time, delta) {
-    if (this.isJoining) return;
+    if (this.isJoining || this.isAnswering) return;
     if (!this.isAdvancing) return;
 
     const cfg = GAME_CONFIG;
-    const dt = Math.min(delta / 1000, 0.05);       // 限制单帧最大 50ms
+    const dt = Math.min(delta / 1000, 0.05);
     let moveDist = cfg.walkSpeed * dt;
 
     const remaining = cfg.landmarkGap - this.distanceSinceSpawn;
     if (moveDist > remaining) moveDist = remaining;
 
-    // 移动地标
+    // 移动地标和背景
     this.landmarks.forEach((lm) => lm.moveBy(-moveDist));
-    // 地面滚动
-    // this.ground.tilePositionX += moveDist;
-    this.bg.x -= moveDist * 1
-    // 累计
+    this.bg.x -= moveDist * 1;
     this.distanceSinceSpawn += moveDist;
 
-    console.log('[update] moveDist=', moveDist.toFixed(2),
-      'acc=', this.distanceSinceSpawn.toFixed(2));
-
-    // 走完一个间距
+    // 走完一个间距，到达地标
     if (this.distanceSinceSpawn >= cfg.landmarkGap - 0.01) {
-      this.spawnLandmark();
       this.distanceSinceSpawn = 0;
       this.isAdvancing = false;
+      
       this.she.setWalking(false);
       if (this.he) this.he.setWalking(false);
-      console.log('[update] finished one step');
-      console.log('he', !!this.he);
-      if (!this.he){
-        this.triggerHeJoin();
-      }else{
-        this.spawnLandmark();
+
+      const currentLandmark = this.landmarks[0]; 
+
+      // 逻辑分支
+      if (!this.he) {
+        // 男主还没出现，触发男主出场并提问
+        this.triggerHeJoin(currentLandmark); 
+      } else {
+        // 男主已经在场，直接触发答题（由男主提问）
+        if (currentLandmark && currentLandmark.data.question) {
+          this.askQuestion(currentLandmark.data);
+        } else {
+          this.spawnLandmark(); // 如果没配题目，直接继续
+        }
       }
     }
 

@@ -11,7 +11,7 @@ export default class BootScene extends Phaser.Scene {
       .setOrigin(1.5);
 
     this.load.spritesheet('she','public/assets/walk.png', {
-      frameWidth: 650,
+      frameWidth: 700,
       frameHeight: 1024,
     });
 
@@ -35,7 +35,7 @@ export default class BootScene extends Phaser.Scene {
     if (!this.anims.exists('she-walk')) {
       this.anims.create({
         key: 'she-walk',
-        frames: this.anims.generateFrameNumbers('she', { start: 0, end: 3 }),
+        frames: this.anims.generateFrameNumbers('she', { start: 1, end: 4 }),
         frameRate: 8,
         repeat: -1,
       });

@@ -16,7 +16,18 @@ export const GAME_CONFIG = {
 };
 
 export const LANDMARKS = [
-  { key: 'xing', file: 'xing.png', name: '兴记',   line: '第一次见面',   color: 0x6fa8dc , scale: 0.1 },
+  { 
+    key: 'xingji', 
+    file: 'xing.png', 
+    name: '興记',   
+    line: '第一次见面',   
+    color: 0x6fa8dc , 
+    scale: 0.1,
+
+    question: '第一次我们在哪见面？', 
+    options: ['公园', '7-11', '興记'], 
+    answer: 2 // 索引 2 是 '興记'
+  },
   { key: 'park',    name: '公园',   line: '樱花开了。',    color: 0x93c47d },
   { key: 'cafe',    name: '咖啡店', line: '闻到咖啡香了。', color: 0xb07d5a },
   { key: 'station', name: '车站',   line: '人来人往。',    color: 0x8e7cc3 },
