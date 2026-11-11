@@ -1,35 +1,47 @@
 export default class Hero {
-  constructor(scene, x, y) {
+  constructor(scene, x, y, textureKey) {
     this.scene = scene;
+    this.textureKey = textureKey;
 
-    if (!scene.anims.exists('hero-walk')) {
-      scene.anims.create({
-        key: 'hero-walk',
-        frames: scene.anims.generateFrameNumbers('hero', { start: 0, end: 3 }),
-        frameRate: 8,
-        repeat: -1,
-      });
-    }
-    if (!scene.anims.exists('hero-idle')) {
-      scene.anims.create({
-        key: 'hero-idle',
-        frames: [{ key: 'hero', frame: 0 }],
-        frameRate: 1,
-        repeat: -1,
-      });
-    }
+    // const walkAnimKey = '${textureKey}-walk';
+    // const idleAnimKey = '${textureKey}-idle';
 
-    this.sprite = scene.add.sprite(x, y, 'hero');
+    // if (!scene.anims.exists(walkAnimKey)) {
+    //   scene.anims.create({
+    //     key: walkAnimKey,
+    //     frames: scene.anims.generateFrameNumbers(textureKey, { start: 0, end: 3 }),
+    //     frameRate: 8,
+    //     repeat: -1,
+    //   });
+    // }
+    // if (!scene.anims.exists(idleAnimKey)) {
+    //   scene.anims.create({
+    //     key: idleAnimKey,
+    //     frames: [{ key: textureKey, frame: 0 }],
+    //     frameRate: 1,
+    //     repeat: -1,
+    //   });
+    // }
+
+    this.sprite = scene.add.sprite(x, y, textureKey);
     this.sprite.setOrigin(0.5, 1);
+
+    const targetHeight = scene.scale.height / 3;
+    this.sprite.setScale(targetHeight / this.sprite.height);
+    // this.sprite.setScale(0.2);
     this.sprite.setDepth(50);
-    this.sprite.play('hero-idle');
+    this.sprite.play(`${this.textureKey}-idle`);
   }
 
   setWalking(walking) {
-    const target = walking ? 'hero-walk' : 'hero-idle';
-    const current = this.sprite.anims.currentAnim && this.sprite.anims.currentAnim.key;
-    if (current !== target) {
-      this.sprite.play(target, true);
+    const animKey = walking ? `${this.textureKey}-walk` : `${this.textureKey}-idle`;
+    const currentAnim = this.sprite.anims.currentAnim;
+    if (!currentAnim || currentAnim.key !== animKey) {
+      this.sprite.play(animKey, true);
     }
+  }
+
+  setFlipX(isFlipped){
+    this.sprite.setFlipX(isFlipped);
   }
 }

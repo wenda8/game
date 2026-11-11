@@ -1,11 +1,16 @@
 export const GAME_CONFIG = {
-  width: 800,
-  height: 450,
+  // 画面尺寸
+  width: 600,
+  height: 1000,         
   groundHeight: 40,
   walkSpeed: 180,
-  heroX: 280,
-  landmarkGap: 420,
-  spawnX: 760,
+
+  // 人物位置
+  heroX: 200, 
+
+  //地标
+  landmarkGap: 350,
+  spawnX: 700,
   destroyX: -200,
   maxOnScreen: 4,
 };
