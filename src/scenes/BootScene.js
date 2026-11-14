@@ -10,17 +10,35 @@ export default class BootScene extends Phaser.Scene {
       .text(300, 225, 'loading…', { fontSize: '24px', color: '#333' })
       .setOrigin(1.5);
 
-    this.load.spritesheet('she','public/assets/walk.png', {
+    this.load.spritesheet('she','assets/shewalk.png', {
       frameWidth: 700,
       frameHeight: 1024,
     });
 
-    this.load.spritesheet('he','public/assets/hewalk.png', {
+    this.load.spritesheet('he','assets/hewalk.png', {
       frameWidth: 650,
       frameHeight: 1024,
     });
 
-    this.load.image('bg', 'public/assets/bg.png');
+    this.load.image('bg2', 'assets/bg2.png');
+    this.load.image('xing', 'assets/xing.png');
+    this.load.image('dianyingyuan', 'assets/dianyingyuan.png');
+    this.load.image('yanchanghui', 'assets/yanchanghui.png');
+    this.load.image('dalilijiang', 'assets/dalilijiang.png');
+    this.load.image('sias', 'assets/sias.png');
+    this.load.image('jinan', 'assets/jinan.png');
+    this.load.image('xuzhou', 'assets/xuzhou.png');
+    this.load.image('yanhu', 'assets/yanhu.png');
+
+    this.load.image('yanhup1', 'assets/yanhup1.jpg');
+    this.load.image('xuzhoup1', 'assets/xuzhoup1.jpg');
+    this.load.image('xuzhoup2', 'assets/xuzhoup2.jpg');
+    this.load.image('dalip1', 'assets/dalip1.jpg');
+    this.load.image('dalip2', 'assets/dalip2.jpg');
+    this.load.image('dalip3', 'assets/dalip3.jpg');
+    this.load.image('lijiangp1', 'assets/lijiangp1.jpg');
+    this.load.image('yanchanghuip1', 'assets/yanchanghuip1.jpg');
+    this.load.image('jinanp1', 'assets/jinanp1.jpg');
 
     LANDMARKS.forEach((lm) => {
         this.load.image(lm.key, `assets/landmarks/${lm.file}`);
